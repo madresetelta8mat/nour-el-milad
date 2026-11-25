@@ -57,6 +57,7 @@
   textarea{width:100%;border:1px solid var(--line);border-radius:12px;padding:11px;font-family:inherit;font-size:16px;line-height:1.8;background:transparent;color:var(--ink);resize:vertical}
   textarea:focus{outline:2px solid var(--gold);border-color:var(--gold)}
   #gateMsg{font-size:14px;line-height:1.8;margin-top:8px;font-weight:600;min-height:10px}
+  .gday.missed{border-color:#e08a3c !important;color:#e08a3c;font-weight:700}
   #lockNote{font-size:14.5px;line-height:1.9;background:rgba(217,164,65,.12);border:1px solid var(--gold);border-radius:12px;padding:11px;margin-top:10px}
   #readerModal{position:fixed;inset:0;background:rgba(4,10,20,.74);z-index:60;display:none;align-items:flex-end;justify-content:center}
   .reader-box{background:var(--card);color:var(--ink);width:100%;max-width:580px;max-height:93vh;overflow:auto;border-radius:20px 20px 0 0;padding:16px}
@@ -199,6 +200,7 @@
   <div class="card">
     <h3>🗓️ رحلة الـ ٤٣ يوم</h3>
     <div class="grid" id="grid"></div>
+    <div style="font-size:12.5px;color:var(--muted);margin-top:8px">اليوم اللي عليه نقطة برتقالية • ده يوم فاتك — دوس عليه وخلّصه في أي وقت، هيتحسب لك.</div>
   </div>
 
   <div class="card">
@@ -447,8 +449,12 @@ function render(){
   renderGate(done);
   const grid = document.getElementById("grid"); grid.innerHTML = "";
   for(let d=1; d<=TOTAL; d++){
-    const b = document.createElement("button"); b.className = "gday" + (done.includes(d)?" done":"") + (d===view?" viewing":"") + (d===todayIndex()?" istoday":"");
-    b.textContent = AR(d); b.onclick = ()=>{ view=d; render(); window.scrollTo({top:0,behavior:"smooth"}); };
+    const b = document.createElement("button");
+    const missed = d < todayIndex() && !done.includes(d);
+    b.className = "gday" + (done.includes(d)?" done":"") + (d===view?" viewing":"") + (d===todayIndex()?" istoday":"") + (missed?" missed":"");
+    b.textContent = AR(d) + (missed ? " •" : "");
+    if(missed) b.title = "فاتك — تقدر تخلّصه";
+    b.onclick = ()=>{ view=d; render(); window.scrollTo({top:0,behavior:"smooth"}); };
     grid.appendChild(b);
   }
   renderScene(done.length);
@@ -474,18 +480,22 @@ function renderGate(done){
     document.getElementById("myVerseShow").textContent = v ? "آيتك من قراية اليوم: «" + v + "»" : "";
     return;
   }
-  const fi = firstIncomplete(done);
-  const locked = fi < view;
+  const ti = todayIndex();
   const lockEl = document.getElementById("lockNote");
   const input = document.getElementById("verseInput"), vbtn = document.getElementById("verifyBtn");
-  if(locked){
+  if(view > ti){
     lockEl.style.display = "block";
-    lockEl.innerHTML = "🔒 اليوم ده مقفول — إحنا ماشيين يوم بيوم. خلّص <b>يوم " + AR(fi) + "</b> الأول بآية من قرايته، وبعدين ارجع هنا.";
+    lockEl.innerHTML = "⏳ اليوم ده لسه مجاش — إحنا ماشيين مع الصوم يوم بيوم. قرايته هتتفتح يومها، ارجع لقراية النهاردة.";
     input.style.display = "none"; vbtn.style.display = "none";
   } else {
-    lockEl.style.display = "none";
     input.style.display = "block"; vbtn.style.display = "block";
     if(document.activeElement !== input) input.value = store.verses[view] || "";
+    if(view < ti){
+      lockEl.style.display = "block";
+      lockEl.innerHTML = "اليوم ده فاتك — بس تقدر تخلّصه دلوقتي عادي 🙌 اقرا قرايته واكتب آية منها وهيتحسب لك في رحلتك.";
+    } else {
+      lockEl.style.display = "none";
+    }
   }
   document.getElementById("gateMsg").textContent = "";
 }
@@ -553,8 +563,7 @@ document.getElementById("verifyBtn").onclick = async ()=>{
   const words = n.split(" ").filter(Boolean);
   if(words.length < 3 || n.length < 12){ setMsg("اكتب آية كاملة من القراية — ٣ كلمات على الأقل، زي ما قريتها على قد ما تقدر.", false); return; }
   let done = store.done;
-  const fi = firstIncomplete(done);
-  if(fi < view){ setMsg("اليوم ده مقفول — خلّص يوم " + AR(fi) + " الأول.", false); return; }
+  if(view > todayIndex()){ setMsg("اليوم ده لسه مجاش — خلّص قراية النهاردة الأول.", false); return; }
   verifying = true;
   const btn = document.getElementById("verifyBtn");
   btn.disabled = true; btn.textContent = "بنتأكد من الآية في قراية اليوم...";
@@ -569,7 +578,10 @@ document.getElementById("verifyBtn").onclick = async ()=>{
   const doneDay = view;
   store.done = [...done, view];
   const verses = store.verses; verses[view] = raw; store.verses = verses;
-  if(view < TOTAL) view++;
+  const ti2 = todayIndex();
+  if(doneDay !== ti2 && !store.done.includes(ti2)) view = ti2;
+  else if(doneDay < ti2){ const fi2 = firstIncomplete(store.done); view = fi2 <= TOTAL ? fi2 : doneDay; }
+  else if(view < TOTAL) view++;
   render();
   const m2 = document.getElementById("gateMsg");
   m2.textContent = "✅ برافو! خلّصت يوم " + AR(doneDay) + " بآية من قرايته" + " — وظهرت حتة جديدة في مشهد الميلاد 🎄";
