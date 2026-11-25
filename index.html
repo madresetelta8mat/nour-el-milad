@@ -47,6 +47,14 @@
   footer{text-align:center;color:#9db0c3;font-size:13px;margin-top:16px;line-height:1.9}
   .modebtn{background:transparent;border:1px solid #35506e;color:#cfe0ef;border-radius:20px;padding:7px 16px;cursor:pointer;font-size:14px;margin-top:8px}
   .scene-svg{width:100%;height:auto;border-radius:14px;display:block}
+    .scene-wrap{position:relative;border-radius:14px;overflow:hidden;line-height:0}
+    .scene-wrap.done{box-shadow:0 0 34px rgba(242,193,78,.5)}
+    .scene-img{width:100%;height:auto;display:block}
+    .scene-tiles{position:absolute;inset:0;display:grid;grid-template-columns:repeat(8,1fr);grid-template-rows:repeat(6,1fr)}
+    .tile{background:linear-gradient(160deg,#1b3049,#0b192b);box-shadow:inset 0 0 0 1px rgba(242,193,78,.16);display:flex;align-items:center;justify-content:center;color:rgba(242,193,78,.45);font-size:13px;transition:opacity .9s ease}
+    .tile::after{content:"\2605"}
+    .name-input{width:100%;padding:12px 14px;border-radius:10px;border:1.5px solid #d9a441;font-size:17px;background:rgba(127,127,127,.08);color:inherit;font-family:inherit;margin:8px 0}
+    .name-edit{background:none;border:none;color:#d9a441;font-size:13.5px;cursor:pointer;text-decoration:underline;font-family:inherit}
   .scene-svg g.piece{transition:opacity .8s ease}
   .scene-cap{font-size:14.5px;line-height:1.9;margin-top:10px}
   .scene-next{color:var(--gold);font-weight:700}
@@ -90,6 +98,20 @@
     <button class="modebtn" id="modeBtn">🌙 الوضع الليلي</button>
   </header>
 
+  <div class="card" id="nameCard">
+    <div id="namePrompt">
+      <h3>⭐ أهلًا بيك في «نور الميلاد»</h3>
+      <p style="margin:4px 0">اكتب اسمك — هيتحفظ عندك، ويظهر على كارت المشاركة بتاعك لما تشارك تقدّمك 📲</p>
+      <input class="name-input" id="nameInput" type="text" maxlength="40" placeholder="اسمك ايه؟">
+      <button class="bigbtn" id="nameSaveBtn">ابدأ الرحلة 🎄</button>
+    </div>
+    <div id="nameHello" style="display:none">
+      <h3 style="margin-bottom:2px">أهلًا يا <span id="helloName"></span> 👋</h3>
+      <p style="margin:2px 0">كمّل رحلتك النهارده… النجمة مستنية تنوّر بيك ⭐</p>
+      <button class="name-edit" id="nameEditBtn">تعديل الاسم</button>
+    </div>
+  </div>
+
   <div class="stats">
     <div class="stat"><b id="stPct">٠٪</b><span>من العهد الجديد</span></div>
     <div class="stat"><b id="stDone">٠</b><span>يوم خلّصته</span></div>
@@ -98,60 +120,10 @@
 
   <div class="card">
     <h3>🎄 مشهد الميلاد بتاعك — بيتبني يوم بيوم</h3>
-    <svg class="scene-svg" viewBox="0 0 360 210" role="img" aria-label="مشهد الميلاد">
-      <defs>
-        <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0" stop-color="#0b1e38"/><stop offset="1" stop-color="#274a73"/>
-        </linearGradient>
-      </defs>
-      <rect x="0" y="0" width="360" height="210" fill="url(#sky)"/>
-      <g fill="#ffffff" opacity=".5">
-        <circle cx="30" cy="26" r="1.5"/><circle cx="128" cy="16" r="1.3"/><circle cx="238" cy="58" r="1.1"/><circle cx="338" cy="86" r="1.3"/>
-      </g>
-      <g class="piece" id="sc0" opacity="0"><circle cx="312" cy="34" r="14" fill="#f7e7b0"/><circle cx="312" cy="34" r="19" fill="none" stroke="#f7e7b0" stroke-opacity=".35" stroke-width="5"/></g>
-      <g class="piece" id="sc1" opacity="0"><g fill="#ffe9a8"><path d="M60,22 l2.5,6 6,2.5 -6,2.5 -2.5,6 -2.5,-6 -6,-2.5 6,-2.5 Z"/><path d="M150,48 l2,5 5,2 -5,2 -2,5 -2,-5 -5,-2 5,-2 Z"/><path d="M252,14 l2,5 5,2 -5,2 -2,5 -2,-5 -5,-2 5,-2 Z"/><path d="M96,84 l1.8,4.4 4.4,1.8 -4.4,1.8 -1.8,4.4 -1.8,-4.4 -4.4,-1.8 4.4,-1.8 Z"/></g></g>
-      <g class="piece" id="sc2" opacity="0"><path d="M0,172 Q90,146 180,168 T360,164 V210 H0 Z" fill="#17351f"/></g>
-      <g class="piece" id="sc4" opacity="0"><g fill="#10233a"><rect x="16" y="140" width="26" height="24"/><rect x="46" y="148" width="20" height="17"/><rect x="290" y="144" width="24" height="20"/><rect x="320" y="137" width="28" height="27"/></g><g fill="#ffd968"><rect x="24" y="148" width="4" height="5"/><rect x="54" y="154" width="3.5" height="4.5"/><rect x="298" y="151" width="4" height="5"/><rect x="330" y="146" width="4" height="5"/></g></g>
-      <g class="piece" id="sc3" opacity="0"><path d="M0,190 Q120,170 360,186 V210 H0 Z" fill="#265233"/></g>
-      <g class="piece" id="sc5" opacity="0"><path d="M166,210 Q175,193 180,178 Q186,193 198,210 Z" fill="#b99b5f" opacity=".85"/></g>
-      <g class="piece" id="sc6" opacity="0"><rect x="126" y="94" width="108" height="80" fill="#3d2c17"/></g>
-      <g class="piece" id="sc9" opacity="0"><rect x="150" y="120" width="60" height="54" fill="#170e02"/></g>
-      <g class="piece" id="sc7" opacity="0"><rect x="126" y="94" width="10" height="80" fill="#5d4225"/><rect x="224" y="94" width="10" height="80" fill="#5d4225"/></g>
-      <g class="piece" id="sc8" opacity="0"><path d="M110,98 L180,58 L250,98 L236,98 L180,72 L124,98 Z" fill="#77572f"/></g>
-      <g class="piece" id="sc10" opacity="0"><g stroke="#6b4a2a" stroke-width="3"><path d="M16,186 H58 M16,196 H58"/><path d="M20,180 v20 M36,180 v20 M52,180 v20" stroke-width="4"/></g></g>
-      <g class="piece" id="sc11" opacity="0"><path d="M36,178 l10,-34 l10,34 Z" fill="#2e6b3e"/><path d="M42,150 l8,-24 l8,24 Z" fill="#35804a"/><rect x="49" y="176" width="5" height="10" fill="#5d4225"/></g>
-      <g class="piece" id="sc12" opacity="0"><path d="M300,180 l10,-32 l10,32 Z" fill="#2e6b3e"/><path d="M306,156 l8,-22 l8,22 Z" fill="#35804a"/><rect x="313" y="178" width="5" height="9" fill="#5d4225"/></g>
-      <g class="piece" id="sc16" opacity="0"><ellipse cx="143" cy="150" rx="8" ry="6.5" fill="#8f8a80" transform="rotate(-18 143 150)"/><path d="M137,144 l-4,-11 M144,143 l0,-12" stroke="#8f8a80" stroke-width="3.5"/><circle cx="140" cy="151" r="1.4" fill="#222"/></g>
-      <g class="piece" id="sc17" opacity="0"><ellipse cx="218" cy="150" rx="8.5" ry="6.5" fill="#7a5a3a" transform="rotate(18 218 150)"/><path d="M210,143 q-6,-5 -10,-3 M226,143 q6,-5 10,-3" stroke="#e8ddc8" stroke-width="2.8" fill="none"/><circle cx="221" cy="151" r="1.4" fill="#160e04"/></g>
-      <g class="piece" id="sc13" opacity="0"><g stroke="#e8c766" stroke-width="2.6"><path d="M132,198 q5,-6 10,0 q5,-6 10,0"/><path d="M214,200 q5,-6 10,0 q5,-6 10,0"/><path d="M168,204 q5,-6 10,0"/></g></g>
-      <g class="piece" id="sc14" opacity="0"><path d="M156,160 h48 l-7,15 h-34 Z" fill="#8a6238"/><path d="M162,175 l-4,12 M198,175 l4,12" stroke="#8a6238" stroke-width="4"/></g>
-      <g class="piece" id="sc15" opacity="0"><path d="M160,158 q6,-8 12,0 q6,-9 12,-1 q6,-8 12,0" stroke="#e8c766" stroke-width="3.5" fill="none"/></g>
-      <g class="piece" id="sc39" opacity="0"><path d="M162,165 Q180,158 198,165 L195,173 Q180,167 165,173 Z" fill="#fdf6e3"/></g>
-      <g class="piece" id="sc38" opacity="0"><circle cx="180" cy="149" r="17" fill="#ffd968" opacity=".35"/></g>
-      <g class="piece" id="sc40" opacity="0"><circle cx="180" cy="149" r="5.5" fill="#f6d3ae"/><path d="M168,160 Q180,152 192,160 L190,166 Q180,161 170,166 Z" fill="#ffffff"/></g>
-      <g class="piece" id="sc41" opacity="0"><ellipse cx="180" cy="170" rx="46" ry="14" fill="#ffd968" opacity=".22"/><g fill="#ffe9a8"><path d="M146,132 l1.8,4.4 4.4,1.8 -4.4,1.8 -1.8,4.4 -1.8,-4.4 -4.4,-1.8 4.4,-1.8 Z"/><path d="M212,130 l1.8,4.4 4.4,1.8 -4.4,1.8 -1.8,4.4 -1.8,-4.4 -4.4,-1.8 4.4,-1.8 Z"/></g></g>
-      <g class="piece" id="sc18" opacity="0"><ellipse cx="66" cy="182" rx="13" ry="8" fill="#e9e4da"/><circle cx="55" cy="178" r="4.5" fill="#cfc8ba"/><path d="M60,189 v6 M72,189 v6" stroke="#cfc8ba" stroke-width="2.5"/></g>
-      <g class="piece" id="sc19" opacity="0"><ellipse cx="112" cy="190" rx="10" ry="6.5" fill="#ddd6c9"/><circle cx="103" cy="187" r="3.8" fill="#c4bcab"/><path d="M107,195 v5 M117,195 v5" stroke="#c4bcab" stroke-width="2.2"/></g>
-      <g class="piece" id="sc20" opacity="0"><path d="M84,196 L90,158 L96,196 Z" fill="#7a4a2b"/><circle cx="90" cy="150" r="7" fill="#f0c8a0"/><path d="M99,146 L103,196" stroke="#a97c50" stroke-width="3"/></g>
-      <g class="piece" id="sc21" opacity="0"><path d="M25,196 L31,167 L37,196 Z" fill="#6a5138"/><circle cx="31" cy="160" r="5.5" fill="#e8b98d"/><path d="M39,158 L42,196" stroke="#a97c50" stroke-width="2.5"/></g>
-      <g class="piece" id="sc27" opacity="0"><path d="M128,196 L136,142 L144,196 Z" fill="#5a6e46"/><circle cx="136" cy="134" r="7.5" fill="#e8b98d"/></g>
-      <g class="piece" id="sc28" opacity="0"><circle cx="154" cy="163" r="10" fill="#ffd968" opacity=".35"/><rect x="150" y="157" width="8" height="11" fill="#f2c96b" stroke="#8a6238" stroke-width="1.4"/><path d="M154,132 L156,157" stroke="#a97c50" stroke-width="2.4"/></g>
-      <g class="piece" id="sc30" opacity="0"><circle cx="222" cy="145" r="11.5" fill="none" stroke="#ffd968" stroke-width="2.2"/></g>
-      <g class="piece" id="sc29" opacity="0"><path d="M206,196 L216,156 Q228,150 232,196 Z" fill="#35618e"/><circle cx="222" cy="146" r="7.5" fill="#f0c8a0"/><path d="M214,146 Q222,134 231,146 L231,154 Q222,148 214,154 Z" fill="#7fa8cf"/></g>
-      <g class="piece" id="sc34" opacity="0"><g fill="#6e5233"><ellipse cx="326" cy="146" rx="19" ry="8.5"/><path d="M340,142 L349,124 L355,129 L347,148 Z"/><rect x="349" y="121" width="9" height="6" rx="2.5"/><path d="M314,138 q6,-8 12,0 Z"/><path d="M312,152 v18 M338,152 v18" stroke="#6e5233" stroke-width="3.4"/></g><rect x="316" y="136" width="13" height="7" fill="#a03d2d"/></g>
-      <g class="piece" id="sc31" opacity="0"><path d="M272,196 L278,160 L284,196 Z" fill="#7a3b69"/><circle cx="278" cy="153" r="6" fill="#e8b98d"/><path d="M272,148 l3,-6 l3,5 l3,-5 l3,6 Z" fill="#f2c96b"/></g>
-      <g class="piece" id="sc32" opacity="0"><path d="M292,196 L298,164 L304,196 Z" fill="#a03d2d"/><circle cx="298" cy="157" r="6" fill="#f0c8a0"/><path d="M292,152 l3,-6 l3,5 l3,-5 l3,6 Z" fill="#f2c96b"/></g>
-      <g class="piece" id="sc33" opacity="0"><path d="M312,196 L318,168 L324,196 Z" fill="#2d6e6a"/><circle cx="318" cy="161" r="6" fill="#d9a075"/><path d="M312,156 l3,-6 l3,5 l3,-5 l3,6 Z" fill="#f2c96b"/></g>
-      <g class="piece" id="sc35" opacity="0"><rect x="236" y="185" width="14" height="11" fill="#d9a441"/><rect x="236" y="182" width="14" height="4" fill="#b8862f"/><rect x="241.5" y="182" width="3" height="14" fill="#fff3d6"/></g>
-      <g class="piece" id="sc36" opacity="0"><path d="M258,196 v-8 q0,-3 3,-3 q3,0 3,3 v8 Z" fill="#c0392b"/><rect x="259" y="181" width="4" height="4" fill="#e8c766"/></g>
-      <g class="piece" id="sc37" opacity="0"><path d="M270,196 v-7 q0,-3 2.8,-3 q2.8,0 2.8,3 v7 Z" fill="#7a3b69"/><rect x="271.4" y="182.5" width="3.4" height="3.6" fill="#e8c766"/></g>
-      <g class="piece" id="sc23" opacity="0"><polygon points="174,52 186,52 216,152 144,152" fill="#ffeeb8" opacity=".16"/></g>
-      <g class="piece" id="sc22" opacity="0"><path d="M180,30 l3.2,7.8 7.8,3.2 -7.8,3.2 -3.2,7.8 -3.2,-7.8 -7.8,-3.2 7.8,-3.2 Z" fill="#ffd968"/></g>
-      <g class="piece" id="sc26" opacity="0"><circle cx="180" cy="58" r="56" fill="#fff3c4" opacity=".12"/></g>
-      <g class="piece" id="sc24" opacity="0"><ellipse cx="66" cy="52" rx="17" ry="7" fill="#ffffff" opacity=".85" transform="rotate(-24 66 52)"/><ellipse cx="104" cy="52" rx="17" ry="7" fill="#ffffff" opacity=".85" transform="rotate(24 104 52)"/><path d="M85,44 L74,84 L96,84 Z" fill="#f5eeda"/><circle cx="85" cy="38" r="7.5" fill="#f0c8a0"/><circle cx="85" cy="38" r="10.5" fill="none" stroke="#f2c96b" stroke-width="2"/></g>
-      <g class="piece" id="sc25" opacity="0"><g transform="translate(268,18) scale(.62)"><ellipse cx="-14" cy="24" rx="15" ry="6" fill="#ffffff" opacity=".85" transform="rotate(-24 -14 24)"/><ellipse cx="20" cy="24" rx="15" ry="6" fill="#ffffff" opacity=".85" transform="rotate(24 20 24)"/><path d="M3,16 L-7,52 L13,52 Z" fill="#f5eeda"/><circle cx="3" cy="10" r="6.8" fill="#f0c8a0"/><circle cx="3" cy="10" r="9.6" fill="none" stroke="#f2c96b" stroke-width="2"/></g></g>
-      <g class="piece" id="sc42" opacity="0"><circle cx="180" cy="28" r="19" fill="#f2c96b" opacity=".28"/><path d="M180,6 L185.5,22 L202,22 L189,32 L193.5,48 L180,38.5 L166.5,48 L171,32 L158,22 L174.5,22 Z" fill="#ffd968"/><path d="M180,48 L175,92 L185,92 Z" fill="#ffd968" opacity=".8"/></g>
-    </svg>
+    <div class="scene-wrap">
+    <img class="scene-img" src="nativity-painting.jpg" alt="مشهد الميلاد">
+    <div class="scene-tiles" id="sceneTiles"></div>
+  </div>
     <div class="scene-cap" id="sceneCap"></div>
     <button class="bigbtn" id="shareBtn">📲 شارك تقدّمي</button>
   </div>
@@ -298,7 +270,7 @@ const PLAN = [
 
 // Nativity scene pieces: unlock when completed days reach "at"
 const SCENE = [
-  {id:"sc0", name:"القمر", at:1},
+  {id:"sc0", name:"سما بيت لحم", at:1},
   {id:"sc1", name:"نجوم زيادة", at:2},
   {id:"sc2", name:"تلال بيت لحم البعيدة", at:3},
   {id:"sc3", name:"التلال القريبة", at:4},
@@ -342,6 +314,16 @@ const SCENE = [
   {id:"sc41", name:"نور المذود", at:42},
   {id:"sc42", name:"نجمة الميلاد منوّرة ⭐", at:43}
 ];
+const TILES = [1,25,2,43,27,26,23,13, 3,25,7,24,9,26,12,4, 5,32,28,31,18,42,10,35, 11,32,33,30,41,17,34,35, 21,19,40,29,34,36,37,39, 20,14,22,16,6,15,38,8];
+(function buildTiles(){
+  const wrap = document.getElementById("sceneTiles");
+  if(!wrap) return;
+  TILES.forEach(d=>{
+    const t = document.createElement("div");
+    t.className = "tile"; t.dataset.at = d;
+    wrap.appendChild(t);
+  });
+})();
 const CHALLENGES = [
   "صلّي ٥ دقايق زيادة عن عادتك، واشكر ربنا على ٣ حاجات",
   "كلم حد بقالك كتير مكلمتوش واطمّن عليه",
@@ -397,7 +379,9 @@ const store = {
   get chal(){ try{ return JSON.parse(localStorage.getItem("fast_chal")||"[]"); }catch(e){ return []; } },
   set chal(v){ localStorage.setItem("fast_chal", JSON.stringify(v)); },
   get verses(){ try{ return JSON.parse(localStorage.getItem("fast_verses")||"{}"); }catch(e){ return {}; } },
-  set verses(v){ localStorage.setItem("fast_verses", JSON.stringify(v)); }
+  set verses(v){ localStorage.setItem("fast_verses", JSON.stringify(v)); },
+  get name(){ try{ return localStorage.getItem("fast_name")||""; }catch(e){ return ""; } },
+  set name(v){ try{ localStorage.setItem("fast_name", v); }catch(e){} }
 };
 function todayIndex(){
   const now = new Date(); const t = new Date(now.getFullYear(), now.getMonth(), now.getDate());
@@ -426,6 +410,7 @@ function streak(done){
   return {best, current:s};
 }
 function render(){
+  renderName();
   const done = store.done; const pct = Math.round(done.length/TOTAL*100);
   document.getElementById("starFill").setAttribute("y", 100-pct);
   document.getElementById("starFill").setAttribute("height", pct);
@@ -529,13 +514,61 @@ function verseMatches(input, dayText){
   for(let i=0; i+win<=w.length; i++){ if(dayText.includes(w.slice(i,i+win).join(" "))) return true; }
   return false;
 }
+
+// ---------- Visitor reporting (names list for the school) ----------
+const SB_URL = "https://kxhzxhhssvfucqbexcme.supabase.co";
+const SB_KEY = "sb_publishable_zVSoJVtwLGz1IG9urxpvCg_hiMoZms3";
+function visitorId(){
+  let id = null;
+  try{ id = localStorage.getItem("fast_vid"); }catch(e){}
+  if(!id){
+    if(window.crypto && crypto.randomUUID) id = crypto.randomUUID();
+    else id = "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, c=>{ const r = Math.random()*16|0, v = c === "x" ? r : (r&0x3|0x8); return v.toString(16); });
+    try{ localStorage.setItem("fast_vid", id); }catch(e){}
+  }
+  return id;
+}
+function reportProgress(){
+  const nm = store.name; if(!nm) return;
+  const payload = { id: visitorId(), name: nm, days_done: store.done.length, updated_at: new Date().toISOString() };
+  const headers = { "apikey": SB_KEY, "Authorization": "Bearer " + SB_KEY, "Content-Type": "application/json", "Prefer": "return=minimal" };
+  try{
+    fetch(SB_URL + "/rest/v1/nour_visitors", { method: "POST", headers, body: JSON.stringify(payload) })
+      .then(res=>{
+        if(res.status === 409){
+          fetch(SB_URL + "/rest/v1/nour_visitors?id=eq." + payload.id, { method: "PATCH", headers,
+            body: JSON.stringify({ name: payload.name, days_done: payload.days_done, updated_at: payload.updated_at }) }).catch(()=>{});
+        }
+      }).catch(()=>{});
+  }catch(e){}
+}
+
+let editingName = false;
+function renderName(){
+  const nm = store.name;
+  const showPrompt = !nm || editingName;
+  document.getElementById("namePrompt").style.display = showPrompt ? "block" : "none";
+  document.getElementById("nameHello").style.display = showPrompt ? "none" : "block";
+  if(!showPrompt) document.getElementById("helloName").textContent = nm;
+  if(showPrompt && editingName) document.getElementById("nameInput").value = nm;
+}
+document.getElementById("nameSaveBtn").onclick = ()=>{
+  const v = document.getElementById("nameInput").value.trim();
+  if(!v){ document.getElementById("nameInput").focus(); return; }
+  store.name = v; editingName = false; renderName(); reportProgress();
+};
+document.getElementById("nameEditBtn").onclick = ()=>{ editingName = true; renderName(); document.getElementById("nameInput").focus(); };
 function renderScene(doneCount){
+  document.querySelectorAll(".tile").forEach(t=>{
+    const on = doneCount >= +t.dataset.at;
+    t.style.opacity = on ? "0" : "1";
+    t.style.pointerEvents = on ? "none" : "auto";
+  });
+  const wrap = document.querySelector(".scene-wrap");
+  if(wrap) wrap.classList.toggle("done", doneCount >= TOTAL);
   let last = null, next = null;
   SCENE.forEach(p=>{
-    const el = document.getElementById(p.id);
-    const on = doneCount >= p.at;
-    if(el) el.setAttribute("opacity", on ? "1" : "0");
-    if(on) last = p; else if(!next) next = p;
+    if(doneCount >= p.at) last = p; else if(!next) next = p;
   });
   const unlocked = SCENE.filter(p=>doneCount >= p.at).length;
   let html = "بنيت <b>" + AR(unlocked) + " من " + AR(SCENE.length) + "</b> حتة من المشهد.";
@@ -578,6 +611,7 @@ document.getElementById("verifyBtn").onclick = async ()=>{
   }
   const doneDay = view;
   store.done = [...done, view];
+  reportProgress();
   const verses = store.verses; verses[view] = raw; store.verses = verses;
   const ti2 = todayIndex();
   if(doneDay !== ti2 && !store.done.includes(ti2)) view = ti2;
@@ -590,6 +624,7 @@ document.getElementById("verifyBtn").onclick = async ()=>{
 };
 document.getElementById("undoBtn").onclick = ()=>{
   store.done = store.done.filter(d=>d!==view);
+  reportProgress();
   render();
 };
 document.getElementById("modeBtn").onclick = (e)=>{
@@ -637,6 +672,11 @@ document.getElementById("shareBtn").onclick = ()=>{
   ctx.fillStyle = "#ffffff"; ctx.font = "900 84px 'Segoe UI', Tahoma, sans-serif";
   ctx.fillText(AR(pct)+"٪", 540, 590);
   ctx.fillStyle = "#ffffff"; ctx.font = "700 62px 'Segoe UI', Tahoma, sans-serif";
+  const myName = store.name;
+  if(myName){
+    ctx.fillStyle = "#f2c96b"; ctx.font = "700 60px 'Segoe UI', Tahoma, sans-serif";
+    ctx.fillText("رحلة " + myName + " ⭐", 540, 885);
+  }
   ctx.fillText("خلّصت " + AR(done.length) + " من " + AR(TOTAL) + " يوم", 540, 950);
   ctx.fillStyle = "#f2c96b"; ctx.font = "52px 'Segoe UI', Tahoma, sans-serif";
   ctx.fillText("مشهد الميلاد: بنيت " + AR(unlocked) + " من " + AR(SCENE.length) + " حتة 🎄", 540, 1060);
@@ -645,7 +685,7 @@ document.getElementById("shareBtn").onclick = ()=>{
   cv.toBlob(async (blob)=>{
     const file = new File([blob], "noor-el-milaad-progress.png", {type:"image/png"});
     if(navigator.canShare && navigator.canShare({files:[file]})){
-      try{ await navigator.share({files:[file], title:"نور الميلاد", text:"تقدّمي في ختام صوم الميلاد ⭐"}); return; }catch(e){}
+      try{ await navigator.share({files:[file], title:"نور الميلاد", text:(store.name ? "أنا " + store.name + "، وده تقدّمي في ختام صوم الميلاد ⭐" : "تقدّمي في ختام صوم الميلاد ⭐")}); return; }catch(e){}
     }
     const a = document.createElement("a");
     a.href = URL.createObjectURL(blob); a.download = "noor-el-milaad-progress.png"; a.click();
