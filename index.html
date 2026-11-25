@@ -645,7 +645,7 @@ document.getElementById("shareBtn").onclick = ()=>{
   cv.toBlob(async (blob)=>{
     const file = new File([blob], "noor-el-milaad-progress.png", {type:"image/png"});
     if(navigator.canShare && navigator.canShare({files:[file]})){
-      try{ await navigator.share({files:[file], title:"نور الميلاد", text:"تقدّمي في ختمة صوم الميلاد ⭐"}); return; }catch(e){}
+      try{ await navigator.share({files:[file], title:"نور الميلاد", text:"تقدّمي في ختام صوم الميلاد ⭐"}); return; }catch(e){}
     }
     const a = document.createElement("a");
     a.href = URL.createObjectURL(blob); a.download = "noor-el-milaad-progress.png"; a.click();
