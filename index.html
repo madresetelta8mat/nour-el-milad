@@ -227,12 +227,13 @@
     <div class="reader-tools">
       <button class="chip" id="fontMinus">A−</button>
       <button class="chip" id="fontPlus">A+</button>
+      <a class="chip" id="tafBtn" target="_blank" rel="noopener" style="text-decoration:none;background:var(--gold);color:#231a05;font-weight:800;border-color:var(--gold)">📚 التفسير</a>
       <span style="flex:1"></span>
       <button class="chip" id="chPrev">‹ اللي قبله</button>
       <button class="chip" id="chNext">اللي بعده ›</button>
     </div>
     <div id="readerBody" class="reader-body"></div>
-    <div style="font-size:12px;color:var(--muted);text-align:center;margin-top:10px">نص ترجمة فان دايك كامل ومكتوب جوه التطبيق نفسه — نفس ترجمة الكتاب المقدس اللي في كوبتك ريدر، وبيشتغل من غير نت ومن غير لينكات. اقرا على مهلك وارجع اكتب آية لمستك ✍️</div>
+    <div style="font-size:12px;color:var(--muted);text-align:center;margin-top:10px">نص ترجمة فان دايك كامل ومكتوب جوه التطبيق نفسه — نفس ترجمة الكتاب المقدس اللي في كوبتك ريدر، وبيشتغل من غير نت ومن غير لينكات. اقرا على مهلك وارجع اكتب آية لمستك ✍️ وزرار «التفسير» بيفتح تفسير الإصحاح اللي بتقراه من الموسوعة الكنسية على موقع سانت تكلا.</div>
   </div>
 </div>
 
@@ -652,6 +653,7 @@ document.getElementById("shareBtn").onclick = ()=>{
   }, "image/png");
 };
 // ---------- In-app reader (full Van Dyck text, no external site) ----------
+const TAFSEER = ["matthew","mark","luke","john","acts","romans","corinthians1","corinthians2","galatians","ephesians","philippians","colossians","thessalonians1","thessalonians2","timothy1","timothy2","titus","philemon","hebrews","james","peter1","peter2","john1","john2","john3","jude","apocalypse"];
 let readerChapters = [], readerIdx = 0, readerFont = 18;
 function openReader(startIdx){
   readerChapters = PLAN[view-1];
@@ -681,6 +683,7 @@ function loadChapter(){
   const it = readerChapters[readerIdx];
   const body = document.getElementById("readerBody");
   document.getElementById("readerSub").textContent = it.book + " — إصحاح " + AR(it.ch) + " من " + AR(readerChapters.length) + " إصحاحات في قراية اليوم";
+  document.getElementById("tafBtn").href = "https://st-takla.org/bible/commentary/ar/nt/church-encyclopedia/" + TAFSEER[it.bi] + "/chapter-" + String(it.ch).padStart(2, "0") + ".html";
   document.getElementById("chPrev").disabled = readerIdx <= 0;
   document.getElementById("chNext").disabled = readerIdx >= readerChapters.length - 1;
   body.style.fontSize = readerFont + "px";
