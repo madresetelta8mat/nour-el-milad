@@ -544,7 +544,7 @@ function reportProgress(){
   const payload = { id: visitorId(), name: nm, days_done: store.done.length, updated_at: new Date().toISOString() };
   const headers = { "apikey": SB_KEY, "Authorization": "Bearer " + SB_KEY, "Content-Type": "application/json", "Prefer": "return=minimal" };
   try{
-    fetch(SB_URL + "/rest/v1/nour_visitors", { method: "POST", headers, body: JSON.stringify(payload) })
+    fetch(SB_URL + "/rest/v1/nour_visitors", { method: "POST", headers, body: JSON.stringify(payload), keepalive: true })
       .then(res=>{
         if(res.status === 409){
           fetch(SB_URL + "/rest/v1/nour_visitors?id=eq." + payload.id, { method: "PATCH", headers,
@@ -763,6 +763,7 @@ document.getElementById("fontMinus").onclick = ()=>{ readerFont = Math.max(14, r
 
 document.getElementById("booksList").textContent = BOOKS.map(b=>b[0]).join(" • ");
 render();
+reportProgress();
 </script>
 </body>
 </html>
