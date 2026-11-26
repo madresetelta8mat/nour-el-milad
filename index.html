@@ -541,16 +541,10 @@ function visitorId(){
 }
 function reportProgress(){
   const nm = store.name; if(!nm) return;
-  const payload = { id: visitorId(), name: nm, days_done: store.done.length, updated_at: new Date().toISOString() };
+  const payload = { p_id: visitorId(), p_name: nm, p_days: store.done.length };
   const headers = { "apikey": SB_KEY, "Authorization": "Bearer " + SB_KEY, "Content-Type": "application/json", "Prefer": "return=minimal" };
   try{
-    fetch(SB_URL + "/rest/v1/nour_visitors", { method: "POST", headers, body: JSON.stringify(payload), keepalive: true })
-      .then(res=>{
-        if(res.status === 409){
-          fetch(SB_URL + "/rest/v1/nour_visitors?id=eq." + payload.id, { method: "PATCH", headers,
-            body: JSON.stringify({ name: payload.name, days_done: payload.days_done, updated_at: payload.updated_at }) }).catch(()=>{});
-        }
-      }).catch(()=>{});
+    fetch(SB_URL + "/rest/v1/rpc/nour_report", { method: "POST", headers, body: JSON.stringify(payload), keepalive: true }).catch(()=>{});
   }catch(e){}
 }
 
