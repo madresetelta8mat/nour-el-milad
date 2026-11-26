@@ -67,7 +67,8 @@
   textarea{width:100%;border:1px solid var(--line);border-radius:12px;padding:11px;font-family:inherit;font-size:16px;line-height:1.8;background:transparent;color:var(--ink);resize:vertical}
   textarea:focus{outline:2px solid var(--gold);border-color:var(--gold)}
   #gateMsg{font-size:14px;line-height:1.8;margin-top:8px;font-weight:600;min-height:10px}
-  .gday.missed{border-color:#e08a3c !important;color:#e08a3c;font-weight:700}
+  .gday.locked{opacity:.45}
+    .gday.missed{border-color:#e08a3c !important;color:#e08a3c;font-weight:700}
   #lockNote{font-size:14.5px;line-height:1.9;background:rgba(217,164,65,.12);border:1px solid var(--gold);border-radius:12px;padding:11px;margin-top:10px}
   #readerModal{position:fixed;inset:0;background:rgba(4,10,20,.74);z-index:60;display:none;align-items:flex-end;justify-content:center}
   .reader-box{background:var(--card);color:var(--ink);width:100%;max-width:580px;max-height:93vh;overflow:auto;border-radius:20px 20px 0 0;padding:16px}
@@ -150,7 +151,7 @@
       <button class="navbtn" id="nextBtn" title="اليوم اللي بعده">›</button>
     </div>
     <div class="reading" id="readingTitle"></div>
-    <div style="color:var(--muted);font-size:13.5px">كل الإصحاحات مكتوبة جوه التطبيق نفسه (ترجمة فان دايك) — دوس أي إصحاح أو الزرار اللي تحت واقرا على طول، من غير لينكات:</div>
+    <div id="readHint" style="color:var(--muted);font-size:13.5px">كل الإصحاحات مكتوبة جوه التطبيق نفسه (ترجمة فان دايك) — دوس أي إصحاح أو الزرار اللي تحت واقرا على طول، من غير لينكات:</div>
     <div class="chapters" id="chapterChips"></div>
     <button class="bigbtn" id="readBtn" style="background:var(--navy);color:#fff">📖 اقرأ قراية اليوم هنا</button>
     <div id="gateBox">
@@ -435,22 +436,35 @@ function render(){
   document.getElementById("todayBadge").style.display = (view===todayIndex()) ? "inline-block" : "none";
   document.getElementById("prevBtn").disabled = view<=1;
   document.getElementById("nextBtn").disabled = view>=TOTAL;
-  document.getElementById("readingTitle").textContent = "📖 قراية اليوم: " + readingLabel(view);
+  const future = view > todayIndex();
+  const dateStr = date.toLocaleDateString("ar-EG",{weekday:"long", day:"numeric", month:"long"});
+  document.getElementById("readingTitle").textContent = future ? "🔒 قراية اليوم ده مقفولة لحد يومها" : "📖 قراية اليوم: " + readingLabel(view);
+  document.getElementById("readHint").style.display = future ? "none" : "block";
+  document.getElementById("readBtn").style.display = future ? "none" : "block";
   const chips = document.getElementById("chapterChips"); chips.innerHTML = "";
-  PLAN[view-1].forEach((it, i)=>{
-    const b = document.createElement("button"); b.className = "chip";
-    b.textContent = it.book + " " + AR(it.ch);
-    b.onclick = ()=>openReader(i);
-    chips.appendChild(b);
-  });
+  if(future){
+    const s = document.createElement("span");
+    s.style.cssText = "color:var(--muted);font-size:14.5px;line-height:1.9";
+    s.textContent = "⏳ قراية اليوم ده هتتفتح " + dateStr + " — استنّى يومها، وكمّل في قراية النهاردة.";
+    chips.appendChild(s);
+  } else {
+    PLAN[view-1].forEach((it, i)=>{
+      const b = document.createElement("button"); b.className = "chip";
+      b.textContent = it.book + " " + AR(it.ch);
+      b.onclick = ()=>openReader(i);
+      chips.appendChild(b);
+    });
+  }
   renderGate(done);
   const grid = document.getElementById("grid"); grid.innerHTML = "";
   for(let d=1; d<=TOTAL; d++){
     const b = document.createElement("button");
     const missed = d < todayIndex() && !done.includes(d);
-    b.className = "gday" + (done.includes(d)?" done":"") + (d===view?" viewing":"") + (d===todayIndex()?" istoday":"") + (missed?" missed":"");
+    const fut = d > todayIndex();
+    b.className = "gday" + (done.includes(d)?" done":"") + (d===view?" viewing":"") + (d===todayIndex()?" istoday":"") + (missed?" missed":"") + (fut?" locked":"");
     b.textContent = AR(d) + (missed ? " •" : "");
     if(missed) b.title = "فاتك — تقدر تخلّصه";
+    if(fut){ const dt = new Date(START); dt.setDate(dt.getDate()+d-1); b.title = "لسه مجاش — يفتح " + dt.toLocaleDateString("ar-EG",{weekday:"long", day:"numeric", month:"long"}); }
     b.onclick = ()=>{ view=d; render(); window.scrollTo({top:0,behavior:"smooth"}); };
     grid.appendChild(b);
   }
@@ -482,7 +496,8 @@ function renderGate(done){
   const input = document.getElementById("verseInput"), vbtn = document.getElementById("verifyBtn");
   if(view > ti){
     lockEl.style.display = "block";
-    lockEl.innerHTML = "⏳ اليوم ده لسه مجاش — إحنا ماشيين مع الصوم يوم بيوم. قرايته هتتفتح يومها، ارجع لقراية النهاردة.";
+    const dt2 = new Date(START); dt2.setDate(dt2.getDate()+view-1);
+    lockEl.innerHTML = "⏳ اليوم ده لسه مجاش — إحنا ماشيين مع الصوم يوم بيوم. قرايته هتتفتح " + dt2.toLocaleDateString("ar-EG",{weekday:"long", day:"numeric", month:"long"}) + "، ارجع لقراية النهاردة.";
     input.style.display = "none"; vbtn.style.display = "none";
   } else {
     input.style.display = "block"; vbtn.style.display = "block";
@@ -594,8 +609,16 @@ function renderScene(doneCount){
 }
 function renderChal(){
   const chal = store.chal;
+  const btn = document.getElementById("chalBtn");
+  if(view > todayIndex()){
+    document.getElementById("chalText").textContent = "🔒 تحدي اليوم ده هيظهر يومها — استنّى يومه.";
+    btn.style.display = "none";
+    document.getElementById("chalCount").textContent = "خلّصت " + AR(chal.length) + " تحدي من " + AR(TOTAL);
+    return;
+  }
+  btn.style.display = "";
   document.getElementById("chalText").textContent = CHALLENGES[(view-1) % CHALLENGES.length];
-  const btn = document.getElementById("chalBtn"); const isDone = chal.includes(view);
+  const isDone = chal.includes(view);
   btn.classList.toggle("done", isDone);
   btn.textContent = isDone ? "عملت تحدي اليوم ده ✅ (دوس لو عايز تتراجع)" : "عملت التحدي 💪";
   document.getElementById("chalCount").textContent = "خلّصت " + AR(chal.length) + " تحدي من " + AR(TOTAL);
@@ -711,6 +734,7 @@ document.getElementById("shareBtn").onclick = ()=>{
 const TAFSEER = ["matthew","mark","luke","john","acts","romans","corinthians1","corinthians2","galatians","ephesians","philippians","colossians","thessalonians1","thessalonians2","timothy1","timothy2","titus","philemon","hebrews","james","peter1","peter2","john1","john2","john3","jude","apocalypse"];
 let readerChapters = [], readerIdx = 0, readerFont = 18;
 function openReader(startIdx){
+  if(view > todayIndex()) return;
   readerChapters = PLAN[view-1];
   readerIdx = startIdx || 0;
   document.getElementById("readerModal").style.display = "flex";
