@@ -140,6 +140,11 @@
   </div>
     <div class="scene-cap" id="sceneCap"></div>
     <button class="bigbtn" id="shareBtn">📲 شارك تقدّمي</button>
+    <button class="bigbtn" id="linkBtn" style="margin-top:8px">🔗 لينك تقدّمي — افتحه من أي جهاز</button>
+    <div id="linkBox" style="display:none;margin-top:8px">
+      <input id="linkInput" readonly style="width:100%;padding:10px;border-radius:10px;border:1px solid var(--line);font-size:12px;direction:ltr;text-align:left" />
+      <p style="margin:6px 0 0;font-size:13px;line-height:1.9">انسخ اللينك ده واحتفظ بيه (ابعه لنفسك واتساب 📲) — افتحه من أي موبايل أو متصفح وهتلاقي تقدّمك كله هناك. ومتبعتوش لحد تاني، هو مفتاح تقدّمك 🔑</p>
+    </div>
   </div>
 
   <div class="card">
@@ -558,10 +563,17 @@ function visitorId(){
 }
 function reportProgress(){
   const nm = store.name; if(!nm) return;
-  const payload = { p_id: visitorId(), p_name: nm, p_days: store.done.length };
   const headers = { "apikey": SB_KEY, "Authorization": "Bearer " + SB_KEY, "Content-Type": "application/json", "Prefer": "return=minimal" };
+  const full = { p_id: visitorId(), p_name: nm, p_done: store.done, p_chal: store.chal, p_verses: store.verses };
   try{
-    fetch(SB_URL + "/rest/v1/rpc/nour_report", { method: "POST", headers, body: JSON.stringify(payload), keepalive: true }).catch(()=>{});
+    fetch(SB_URL + "/rest/v1/rpc/nour_sync", { method: "POST", headers, body: JSON.stringify(full), keepalive: true })
+      .then(r=>{
+        if(!r.ok){ // fallback: count-only report (older DB state)
+          const payload = { p_id: full.p_id, p_name: nm, p_days: store.done.length };
+          fetch(SB_URL + "/rest/v1/rpc/nour_report", { method: "POST", headers, body: JSON.stringify(payload), keepalive: true }).catch(()=>{});
+        }
+      })
+      .catch(()=>{});
   }catch(e){}
 }
 
@@ -685,6 +697,18 @@ function starPath(ctx, cx, cy, rO, rI){
   }
   ctx.closePath();
 }
+document.getElementById("linkBtn").onclick = ()=>{
+  reportProgress();
+  const link = location.origin + location.pathname + "?vid=" + visitorId();
+  const box = document.getElementById("linkBox");
+  const inp = document.getElementById("linkInput");
+  box.style.display = "block";
+  inp.value = link;
+  const btn = document.getElementById("linkBtn");
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(link).then(()=>{ btn.textContent = "✅ اتنسخ اللينك! احتفظ بيه في مكان أمان"; }).catch(()=>{ inp.focus(); inp.select(); });
+  } else { inp.focus(); inp.select(); }
+};
 document.getElementById("shareBtn").onclick = ()=>{
   const done = store.done; const pct = Math.round(done.length/TOTAL*100);
   const unlocked = SCENE.filter(p=>done.length >= p.at).length;
@@ -782,6 +806,37 @@ document.getElementById("fontPlus").onclick = ()=>{ readerFont = Math.min(28, re
 document.getElementById("fontMinus").onclick = ()=>{ readerFont = Math.max(14, readerFont - 2); document.getElementById("readerBody").style.fontSize = readerFont + "px"; };
 
 document.getElementById("booksList").textContent = BOOKS.map(b=>b[0]).join(" • ");
+// ---------- Restore progress from a personal link (?vid=...) ----------
+(function(){
+  let vid = null;
+  try{ vid = new URLSearchParams(location.search).get("vid"); }catch(e){}
+  if(!vid) return;
+  try{ history.replaceState(null, "", location.pathname); }catch(e){}
+  if(!/^[0-9a-fA-F-]{36}$/.test(vid)) return;
+  let localVid = null;
+  try{ localVid = localStorage.getItem("fast_vid"); }catch(e){}
+  if(localVid === vid) return;
+  const headers = { "apikey": SB_KEY, "Authorization": "Bearer " + SB_KEY, "Content-Type": "application/json" };
+  fetch(SB_URL + "/rest/v1/rpc/nour_restore", { method: "POST", headers, body: JSON.stringify({ p_id: vid }) })
+    .then(r => r.ok ? r.json() : null)
+    .then(data => {
+      if(!data || !Array.isArray(data.done)) return;
+      const apply = ()=>{
+        try{
+          localStorage.setItem("fast_vid", vid);
+          if(data.name) store.name = data.name;
+          store.done = data.done;
+          store.chal = Array.isArray(data.chal) ? data.chal : [];
+          store.verses = (data.verses && typeof data.verses === "object" && !Array.isArray(data.verses)) ? data.verses : {};
+        }catch(e){}
+        location.reload();
+      };
+      if(store.done.length === 0 && !store.name) apply();
+      else if(confirm("لقيت تقدّم محفوظ في اللينك ده باسم «" + (data.name || "") + "» (" + AR(data.done.length) + " يوم). أسترجعه وأستبدل التقدّم اللي على الجهاز ده؟")) apply();
+    })
+    .catch(()=>{});
+})();
+
 render();
 reportProgress();
 // Animated night sky behind everything: twinkling stars, gentle snow, an occasional shooting star
