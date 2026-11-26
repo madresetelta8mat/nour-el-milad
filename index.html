@@ -135,7 +135,7 @@
   <div class="card">
     <h3>🎄 مشهد الميلاد بتاعك — بيتبني يوم بيوم</h3>
     <div class="scene-wrap">
-    <img class="scene-img" src="nativity-painting.jpg" alt="مشهد الميلاد">
+    <img class="scene-img" src="nativity-scene.jpg" alt="مشهد الميلاد">
     <div class="scene-tiles" id="sceneTiles"></div>
   </div>
     <div class="scene-cap" id="sceneCap"></div>
@@ -285,50 +285,50 @@ const PLAN = [
 // Nativity scene pieces: unlock when completed days reach "at"
 const SCENE = [
   {id:"sc0", name:"سما بيت لحم", at:1},
-  {id:"sc1", name:"نجوم زيادة", at:2},
-  {id:"sc2", name:"تلال بيت لحم البعيدة", at:3},
-  {id:"sc3", name:"التلال القريبة", at:4},
-  {id:"sc4", name:"بيوت بيت لحم", at:5},
-  {id:"sc5", name:"الطريق للمذود", at:6},
+  {id:"sc1", name:"نجوم السما", at:2},
+  {id:"sc2", name:"نجمة بعيدة بتلمع", at:3},
+  {id:"sc3", name:"قش سقف الإسطبل", at:4},
+  {id:"sc4", name:"عوارض الإسطبل الخشب", at:5},
+  {id:"sc5", name:"سقف الإسطبل", at:6},
   {id:"sc6", name:"حيطة الإسطبل", at:7},
-  {id:"sc7", name:"عواميد الإسطبل", at:8},
-  {id:"sc8", name:"سقف الإسطبل", at:9},
-  {id:"sc9", name:"فتحة الإسطبل", at:10},
-  {id:"sc10", name:"سور صغير", at:11},
-  {id:"sc11", name:"شجرة الزيتون", at:12},
-  {id:"sc12", name:"النخلة", at:13},
-  {id:"sc13", name:"قش على الأرض", at:14},
+  {id:"sc7", name:"عمود الإسطبل", at:8},
+  {id:"sc8", name:"أرضية الإسطبل", at:9},
+  {id:"sc9", name:"قدام المذود", at:10},
+  {id:"sc10", name:"عباية المجوسي الأول", at:11},
+  {id:"sc11", name:"فانوس صغير", at:12},
+  {id:"sc12", name:"نور الفوانيس", at:13},
+  {id:"sc13", name:"راس الخروف", at:14},
   {id:"sc14", name:"المذود", at:15},
   {id:"sc15", name:"قش المذود", at:16},
   {id:"sc16", name:"الحمار", at:17},
-  {id:"sc17", name:"الثور", at:18},
-  {id:"sc18", name:"خروف", at:19},
-  {id:"sc19", name:"خروف تاني", at:20},
+  {id:"sc17", name:"البقرة", at:18},
+  {id:"sc18", name:"الخروف", at:19},
+  {id:"sc19", name:"عباية المجوسي التاني", at:20},
   {id:"sc20", name:"الراعي", at:21},
-  {id:"sc21", name:"راعي صغير", at:22},
-  {id:"sc22", name:"نجمة صغيرة فوق الإسطبل", at:23},
+  {id:"sc21", name:"ضهر البقرة", at:22},
+  {id:"sc22", name:"طرف نجمة الميلاد", at:23},
   {id:"sc23", name:"شعاع نور من السما", at:24},
-  {id:"sc24", name:"الملاك", at:25},
-  {id:"sc25", name:"ملاك تاني", at:26},
+  {id:"sc24", name:"العدرا راكعة بتصلي", at:25},
+  {id:"sc25", name:"توب المجوسي التالت", at:26},
   {id:"sc26", name:"نور السما", at:27},
   {id:"sc27", name:"يوسف النجار", at:28},
-  {id:"sc28", name:"فانوس يوسف", at:29},
+  {id:"sc28", name:"فانوس الإسطبل", at:29},
   {id:"sc29", name:"العذراء مريم", at:30},
-  {id:"sc30", name:"هالة العدرا", at:31},
-  {id:"sc31", name:"المجوسي الأول", at:32},
+  {id:"sc30", name:"طرحة العدرا", at:31},
+  {id:"sc31", name:"تاج المجوسي الأول", at:32},
   {id:"sc32", name:"المجوسي التاني", at:33},
-  {id:"sc33", name:"المجوسي التالت", at:34},
-  {id:"sc34", name:"جمل المجوس", at:35},
+  {id:"sc33", name:"عصاية الراعي", at:34},
+  {id:"sc34", name:"المجوسي التالت", at:35},
   {id:"sc35", name:"هدية الدهب", at:36},
   {id:"sc36", name:"هدية اللبان", at:37},
   {id:"sc37", name:"هدية المر", at:38},
-  {id:"sc38", name:"نور حوالين الطفل", at:39},
+  {id:"sc38", name:"المجوسي الأول", at:39},
   {id:"sc39", name:"القماط", at:40},
   {id:"sc40", name:"طفل المذود 👶", at:41},
   {id:"sc41", name:"نور المذود", at:42},
   {id:"sc42", name:"نجمة الميلاد منوّرة ⭐", at:43}
 ];
-const TILES = [1,25,2,43,27,26,23,13, 3,25,7,24,9,26,12,4, 5,32,28,31,18,42,10,35, 11,32,33,30,41,17,34,35, 21,19,40,29,34,36,37,39, 20,14,22,16,6,15,38,8];
+const TILES = [1,4,5,27,43,6,2,3,7,17,29,23,24,12,13,18,8,17,31,30,28,28,18,22,19,14,25,40,41,42,21,34,19,32,9,15,16,33,20,35,11,39,36,10,37,20,38,26];
 (function buildTiles(){
   const wrap = document.getElementById("sceneTiles");
   if(!wrap) return;
